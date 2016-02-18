@@ -5,7 +5,6 @@ var FacebookTokenStrategy   = require('passport-facebook-token');
 var TwitterTokenStrategy    = require('passport-twitter-token');
 var User                    = mongoose.model('User');
 var mongoose 				= require( 'mongoose' );
-var passport                = require('passport');
 
 passport.serializeUser(function(user, done) {
         done(null, user);
