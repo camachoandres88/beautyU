@@ -4,16 +4,24 @@ var mongoose = require( 'mongoose' );
 var ClientModel = mongoose.model('Client');
 var log = require('../libs/log')(module);
 
-router.route('/tickets')
-	.get(function(req, res){
-		return res.send({message:'This is not implemented now'});
-	});
 
-router.route('/ticket/:id')
-	.get(function(req, res){
-		return res.send({message:'TODO get an existing ticket by using param ' + req.params.id});
-	});
+router.get('/auth/google/token', passport.authenticate('google-token'),
+	function (req, res) {
+		res.send(req.user);
+	}
+);
 
+router.get('/auth/twitter/token',passport.authenticate('facebook-token'),
+	function (req, res) {
+		res.send(req.user);
+	}
+);
+
+router.get('/auth/facebook/token',passport.authenticate('twitter-token'),
+	function (req, res) {
+		res.send(req.user);
+	}
+);
 
 router.post('/client',function (req, res) {
 	if(req.body.name && req.body.clientId && req.body.clientSecret ){

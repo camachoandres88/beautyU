@@ -42,9 +42,6 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/api', api)
 app.use('/api/oauth/token', oauth2.token);
-app.get('/api/auth/twitter', passport.authenticate('twitter'));
-app.get('/api/auth/facebook', passport.authenticate('facebook'));
-app.get('/api/auth/google', passport.authenticate('google'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
