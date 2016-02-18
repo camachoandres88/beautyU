@@ -55,9 +55,9 @@ var generateTokens = function (data, done) {
     });
 };
 
-aserver.exchange(oauth2orize.exchange.password(function(client, provider, provider_id, provider_token, scope, done) {
+aserver.exchange(oauth2orize.exchange.password(function(client, provider, provider_id, scope, done) {
     
-    User.findOne({ provider: provider, provider_id: provider_id , provider_token : provider_token}, function(err, user) {
+    User.findOne({ provider: provider, provider_id: provider_id}, function(err, user) {
         if (err) { 
             return done(err); 
         }

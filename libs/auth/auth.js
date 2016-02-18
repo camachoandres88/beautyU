@@ -20,7 +20,7 @@ passport.use(new TwitterTokenStrategy({
     }, 
     function(token, refreshToken, profile, done) {
         process.nextTick(function() {
-            User.findOne({provider_id: profile.id}, function(err, user) {
+            User.findOne({provider_id: profile.id, provider : profile.provider}, function(err, user) {
                 if(err) throw(err);
                 if(!err && user!= null) return done(null, user);
 
@@ -48,7 +48,7 @@ passport.use(new GoogleTokenStrategy({
     },
     function(token, refreshToken, profile, done) {
         process.nextTick(function() {
-            User.findOne({ provider_id : profile.id }, function(err, user) {
+            User.findOne({ provider_id : profile.id , provider : profile.provider}, function(err, user) {
                 if(err) throw(err);
                 if(!err && user!= null) return done(null, user);
 
@@ -77,7 +77,7 @@ passport.use(new FacebookTokenStrategy({
     }, 
     function(token, refreshToken, profile, done) {
         process.nextTick(function() {
-            User.findOne({provider_id: profile.id}, function(err, user) {
+            User.findOne({provider_id: profile.id, provider : profile.provider}, function(err, user) {
                 if(err) throw(err);
                 if(!err && user!= null) return done(null, user);
 
