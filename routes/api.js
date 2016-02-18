@@ -1,8 +1,9 @@
-var express = require('express');
-var router = express.Router();
-var mongoose = require( 'mongoose' );
-var ClientModel = mongoose.model('Client');
-var log = require('../libs/log')(module);
+var express 				= require('express');
+var router 					= express.Router();
+var mongoose 				= require( 'mongoose' );
+var ClientModel 			= mongoose.model('Client');
+var log						= require('../libs/log')(module);
+var passport                = require('passport');
 
 
 router.get('/auth/google/token', passport.authenticate('google-token'),
