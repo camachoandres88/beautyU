@@ -3,8 +3,8 @@ var passport                = require('passport');
 var GoogleTokenStrategy     = require('passport-google-token');
 var FacebookTokenStrategy   = require('passport-facebook-token');
 var TwitterTokenStrategy    = require('passport-twitter-token');
-var User                    = mongoose.model('User');
 var mongoose 				= require( 'mongoose' );
+var User                    = mongoose.model('User');
 
 passport.serializeUser(function(user, done) {
         done(null, user);
@@ -13,7 +13,6 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(obj, done) {
     done(null, obj);
 });
-
 
 passport.use(new TwitterTokenStrategy({
         consumerKey:  config.get('twitterAuth:consumerKey'),
