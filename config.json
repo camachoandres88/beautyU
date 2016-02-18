@@ -4,5 +4,21 @@
     },
     "mongoose": {
         "uri": "mongodb://inport-tickets:FKntSGUTc47S3cyx6QBM5ONnkvCXgz9GD.l6K5LbBj8-@ds042138.mongolab.com:42138/inport-tickets"
+    },
+    "facebookAuth" : {
+        "clientID"      : "your-secret-clientID-here", 
+        "clientSecret"  : "your-client-secret-here",
+        "callbackURL"   : "http://localhost:8080/auth/facebook/callback"
+    },
+    "twitterAuth" : {
+        "consumerKey"       : "your-consumer-key-here",
+        "consumerSecret"    : "your-client-secret-here",
+        "callbackURL"       : "http://localhost:8080/auth/twitter/callback"
+    },
+
+    "googleAuth" : {
+        "clientID"      : "your-secret-clientID-here",
+        "clientSecret"  : "your-client-secret-here",
+        "callbackURL"   : "http://localhost:8080/auth/google/callback"
     }
 }

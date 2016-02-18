@@ -55,17 +55,11 @@ var generateTokens = function (data, done) {
     });
 };
 
-// Exchange username & password for access token.
-aserver.exchange(oauth2orize.exchange.password(function(client, username, password, scope, done) {
+aserver.exchange(oauth2orize.exchange.password(function(client, provider, provider_id, provider_token, scope, done) {
     
-    User.findOne({ username: username }, function(err, user) {
-         log.error("Encontro Usuario:" + user.userId);
+    User.findOne({ provider: provider, provider_id: provider_id , provider_token : provider_token}, function(err, user) {
         if (err) { 
             return done(err); 
-        }
-        
-        if (!user || !user.checkPassword(password)) {
-            return done(null, false);
         }
         
         var model = { 
@@ -78,7 +72,6 @@ aserver.exchange(oauth2orize.exchange.password(function(client, username, passwo
 
 }));
 
-// Exchange refreshToken for access token.
 aserver.exchange(oauth2orize.exchange.refreshToken(function(client, refreshToken, scope, done) {
 
     RefreshToken.findOne({ token: refreshToken, clientId: client.clientId }, function(err, token) {

@@ -2,49 +2,40 @@ var mongoose = require('mongoose');
 var crypto = require('crypto');
 var log = require('../libs/log')(module);
 
-// User
+
 var User = new mongoose.Schema({
-    username: {
-        type: String,
-        unique: true,
-        required: true
+    name: {
+        type: String
     },
-    hashedPassword: {
-        type: String,
-        required: true
+    provider: {
+        type: String
     },
-    salt: {
-        type: String,
-        required: true
+    provider_id: {
+        type: String, 
+        unique: true
+    },
+    provider_token: {
+        type: String
+    },
+    provider_refresh_token: {
+        type: String
+    }
+    email: {
+        type: String
+    },    
+    photo: {
+        type: String
     },
     created: {
-        type: Date,
+        type: Date, 
         default: Date.now
     }
 });
-
-User.methods.encryptPassword = function(password) {
-    return crypto.pbkdf2Sync(password, this.salt, 10000, 512);
-};
 
 User.virtual('userId')
     .get(function () {
         return this.id;
     });
-
-User.virtual('password')
-    .set(function(password) {
-        this._plainPassword = password;
-        this.salt = crypto.randomBytes(32).toString('hex');
-        //more secure - this.salt = crypto.randomBytes(128).toString('hex');
-        this.hashedPassword = this.encryptPassword(password);
-    })
-    .get(function() { return this._plainPassword; });
-
-
-User.methods.checkPassword = function(password) {
-   return this.encryptPassword(password) == this.hashedPassword;
-};
 
 
 // Client
@@ -53,7 +44,7 @@ var Client = new mongoose.Schema({
         type: String,
         unique: true,
         required: true
-    },
+    }, 
     clientId: {
         type: String,
         unique: true,
@@ -114,3 +105,6 @@ mongoose.model('Client', Client);
 mongoose.model('AccessToken', AccessToken);
 mongoose.model('RefreshToken', RefreshToken);
 
+mongoose.model('User',User);
+mongoose.model('AccessToken', AccessToken);
+mongoose.model('RefreshToken', RefreshToken);

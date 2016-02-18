@@ -1,91 +1,101 @@
 var config                  = require('../config');
 var passport                = require('passport');
-var BasicStrategy           = require('passport-http').BasicStrategy;
-var ClientPasswordStrategy  = require('passport-oauth2-client-password').Strategy;
-var BearerStrategy          = require('passport-http-bearer').Strategy;
+var GoogleStrategy          = require('passport-google').Strategy;
+var TwitterStrategy         = require('passport-twitter').Strategy;
+var FacebookStrategy        = require('passport-facebook').Strategy;
+var User                    = mongoose.model('User');
 var mongoose 				= require( 'mongoose' );
-var User          	= mongoose.model('User');
-var Client       	= mongoose.model('Client');
-var AccessToken   	= mongoose.model('AccessToken');
-var RefreshToken 	= mongoose.model('RefreshToken');
 
 
-passport.use(new BasicStrategy(
-    function(username, password, done) {
-        Client.findOne({ clientId: username }, function(err, client) {
-            if (err) { 
-                return done(err); 
-            }
+passport.serializeUser(function(user, done) {
+        done(null, user);
+    });
 
-            if (!client) { 
-                return done(null, false); 
-            }
+passport.deserializeUser(function(obj, done) {
+    done(null, obj);
+});
 
-            if (client.clientSecret !== password) { 
-                return done(null, false); 
-            }
+passport.use(new GoogleStrategy({
+    clientID        : config.get('googleAuth:clientID'),
+    clientSecret    : config.get('googleAuth:clientSecret'),
+    callbackURL     : config.get('googleAuth:callbackURL'),
+},
+function(token, refreshToken, profile, done) {
+    process.nextTick(function() {
+        User.findOne({ provider_id : profile.id }, function(err, user) {
+            if(err) throw(err);
+            if(!err && user!= null) return done(null, user);
 
-            return done(null, client);
-        });
-    }
-));
-
-passport.use(new ClientPasswordStrategy(
-    function(clientId, clientSecret, done) {
-        Client.findOne({ clientId: clientId }, function(err, client) {
-            if (err) { 
-                return done(err); 
-            }
-
-            if (!client) { 
-                return done(null, false); 
-            }
-
-            if (client.clientSecret !== clientSecret) { 
-                return done(null, false); 
-            }
-
-            return done(null, client);
-        });
-    }
-));
-
-passport.use(new BearerStrategy(
-    function(accessToken, done) {
-        AccessToken.findOne({ token: accessToken }, function(err, token) {
-
-            if (err) { 
-                return done(err); 
-            }
-
-            if (!token) { 
-                return done(null, false); 
-            }
-
-            if( Math.round((Date.now()-token.created)/1000) > config.get('security:tokenLife') ) {
-
-                AccessToken.remove({ token: accessToken }, function (err) {
-                    if (err) {
-                        return done(err);
-                    } 
-                });
-
-                return done(null, false, { message: 'Token expired' });
-            }
-
-            User.findById(token.userId, function(err, user) {
-            
-                if (err) { 
-                    return done(err); 
-                }
-
-                if (!user) { 
-                    return done(null, false, { message: 'Unknown user' }); 
-                }
-
-                var info = { scope: '*' };
-                done(null, user, info);
+            var user = new User({
+                provider_id: profile.id,
+                provider: profile.provider,
+                provider_token: token,
+                provider_refresh_token : refreshToken,
+                email : profile.emails[0].value,
+                name: profile.displayName,
+                photo: profile.image.url
+            });
+            user.save(function(err) {
+                if(err) throw err;
+                done(null, user);
             });
         });
-    }
-));
+    });
+}));
+
+
+passport.use(new TwitterStrategy({
+    consumerKey:  config.get('twitterAuth:consumerKey'),
+    consumerSecret:  config.get('twitterAuth:consumerSecret'),
+    callbackURL:  config.get('twitterAuth:callbackURL') 
+}, 
+function(token, refreshToken, profile, done) {
+    process.nextTick(function() {
+        User.findOne({provider_id: profile.id}, function(err, user) {
+            if(err) throw(err);
+            if(!err && user!= null) return done(null, user);
+
+            var user = new User({
+                provider_id: profile.id,
+                provider:  profile.provider,
+                provider_token: token,
+                provider_refresh_token : refreshToken,
+                name: profile.displayName,
+                photo: profile.photos[0].value
+            });
+            user.save(function(err) {
+                if(err) throw err;
+                done(null, user);
+            });
+         });
+    });
+}));
+
+
+passport.use(new FacebookStrategy({
+    clientID: config.get('facebookAuth:clientID'),
+    clientSecret: config.get('facebookAuth:clientSecret'),
+    callbackURL: config.get('facebookAuth:callbackURL')
+}, 
+function(token, refreshToken, profile, done) {
+    process.nextTick(function() {
+        User.findOne({provider_id: profile.id}, function(err, user) {
+            if(err) throw(err);
+            if(!err && user!= null) return done(null, user);
+
+            var user = new User({
+                provider_id: profile.id,
+                provider: profile.provider,
+                provider_token: token,
+                provider_refresh_token : refreshToken,
+                email : profile.emails[0].value,
+                name: profile.displayName,
+                photo: profile.photos[0].value
+            });
+            user.save(function(err) {
+                if(err) throw err;
+                done(null, user);
+            });
+        });
+    });
+}));
